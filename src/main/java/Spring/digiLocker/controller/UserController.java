@@ -32,9 +32,7 @@ public class UserController {
         return userService.login(request);
     }
     @GetMapping("/test")
-    public String test(
-            @RequestParam String token
-    ) {
-        return jwtService.extractEmail(token);
+    public String test() {
+        return "SUCCESS";
     }
 }
