@@ -1,14 +1,12 @@
 package Spring.digiLocker.controller;
 
+import Spring.digiLocker.dto.DeleteResponse;
 import Spring.digiLocker.dto.DocumentResponse;
 import Spring.digiLocker.dto.UploadResponse;
 import Spring.digiLocker.enums.DocumentType;
 import Spring.digiLocker.services.DocumentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,6 +39,7 @@ public class DocumentController {
                 response
         );
     }
+
     @GetMapping("/documents")
     public ResponseEntity<List<DocumentResponse>>
     getMyDocuments() {
@@ -49,4 +48,36 @@ public class DocumentController {
                 documentService.getMyDocuments()
         );
     }
+
+    @GetMapping("/documents/{id}")
+    public ResponseEntity<byte[]> download(
+            @PathVariable Long id
+    ) throws IOException {
+
+        byte[] fileBytes =
+                documentService
+                        .downloadDocument(id);
+
+        return ResponseEntity
+                .ok()
+                .body(fileBytes);
+    }
+
+    @DeleteMapping("/documents/{id}")
+    public ResponseEntity<DeleteResponse> delete(
+            @PathVariable Long id
+    ) throws IOException {
+
+        return ResponseEntity.ok(
+                documentService.deleteDocument(id)
+        );
+    }
+    @GetMapping("/exception-test")
+    public String test() {
+
+        throw new RuntimeException(
+                "Testing Exception Handler"
+        );
+    }
+
 }

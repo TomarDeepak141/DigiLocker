@@ -1,5 +1,6 @@
 package Spring.digiLocker.services;
 
+import Spring.digiLocker.dto.DeleteResponse;
 import Spring.digiLocker.dto.DocumentResponse;
 import Spring.digiLocker.dto.UploadResponse;
 import Spring.digiLocker.entity.Document;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -192,6 +194,111 @@ public class DocumentService {
                 })
                 .toList();
 
+    }
+    public  byte[] downloadDocument(
+            Long documentId
+    ) throws IOException {
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        Long currentUserId =
+                (Long) authentication
+                        .getPrincipal();
+
+        Document document =
+                documentRepository
+                        .findById(documentId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Document not found"
+                                )
+                        );
+        System.out.println("Current User: " + currentUserId);
+        System.out.println("Owner User: " + document.getOwner().getId());
+
+        if(
+                document.getOwner()
+                        .getId()
+                        != currentUserId
+        ) {
+            throw new RuntimeException(
+                    "Forbidden"
+            );
+        }
+
+        File file =
+                new File(
+                        document.getFilePath()
+                );
+
+        if(!file.exists()) {
+            throw new RuntimeException(
+                    "File not found"
+            );
+        }
+
+        return Files.readAllBytes(
+                file.toPath()
+        );
+    }
+
+    public DeleteResponse deleteDocument(
+            Long documentId
+    ) throws IOException {
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        Long currentUserId =
+                (Long) authentication
+                        .getPrincipal();
+        Document document =
+                documentRepository
+                        .findById(documentId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Document not found"
+                                )
+                        );
+        if (
+                document.getOwner()
+                        .getId()
+                        != currentUserId
+        ) {
+            throw new RuntimeException(
+                    "Forbidden"
+            );
+        }
+        File file =
+                new File(
+                        document.getFilePath()
+                );
+        if (!file.exists()) {
+            throw new RuntimeException(
+                    "File not found"
+            );
+        }
+        Files.delete(
+                file.toPath()
+        );
+        documentRepository
+                .delete(document);
+        DeleteResponse response =
+                new DeleteResponse();
+
+        response.setDocumentId(
+                documentId
+        );
+
+        response.setMessage(
+                "Document deleted successfully"
+        );
+
+        return response;
     }
 }
 
