@@ -1,8 +1,6 @@
 package Spring.digiLocker.controller;
 
-import Spring.digiLocker.dto.DeleteResponse;
-import Spring.digiLocker.dto.DocumentResponse;
-import Spring.digiLocker.dto.UploadResponse;
+import Spring.digiLocker.dto.*;
 import Spring.digiLocker.enums.DocumentType;
 import Spring.digiLocker.services.DocumentService;
 import org.springframework.http.ResponseEntity;
@@ -72,11 +70,23 @@ public class DocumentController {
                 documentService.deleteDocument(id)
         );
     }
-    @GetMapping("/exception-test")
-    public String test() {
+    @PostMapping(
+            "/documents/{id}/share"
+    )
+    public ResponseEntity<
+            ShareDocumentResponse
+            > shareDocument(
+            @PathVariable Long id,
+            @RequestBody
+            ShareDocumentRequest request
+    ) {
 
-        throw new RuntimeException(
-                "Testing Exception Handler"
+        return ResponseEntity.ok(
+                documentService
+                        .shareDocument(
+                                id,
+                                request
+                        )
         );
     }
 

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import Spring.digiLocker.enums.DocumentType;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "documents")
@@ -92,4 +94,29 @@ public class Document {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "document_shares",
+            joinColumns =
+            @JoinColumn(
+                    name = "document_id"
+            ),
+            inverseJoinColumns =
+            @JoinColumn(
+                    name = "user_id"
+            )
+    )
+    private Set<User> sharedUsers =
+            new HashSet<>();
+    public Set<User> getSharedUsers() {
+        return sharedUsers;
+    }
+
+    public void setSharedUsers(
+            Set<User> sharedUsers
+    ) {
+        this.sharedUsers =
+                sharedUsers;
+    }
 }

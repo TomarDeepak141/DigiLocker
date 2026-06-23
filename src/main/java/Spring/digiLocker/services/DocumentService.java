@@ -1,8 +1,6 @@
 package Spring.digiLocker.services;
 
-import Spring.digiLocker.dto.DeleteResponse;
-import Spring.digiLocker.dto.DocumentResponse;
-import Spring.digiLocker.dto.UploadResponse;
+import Spring.digiLocker.dto.*;
 import Spring.digiLocker.entity.Document;
 import Spring.digiLocker.entity.User;
 import Spring.digiLocker.enums.DocumentType;
@@ -296,6 +294,90 @@ public class DocumentService {
 
         response.setMessage(
                 "Document deleted successfully"
+        );
+
+        return response;
+    }
+    public ShareDocumentResponse
+    shareDocument(
+            Long documentId,
+            ShareDocumentRequest request
+    ){
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        Long currentUserId =
+                (Long) authentication
+                        .getPrincipal();
+        Document document =
+                documentRepository
+                        .findById(documentId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Document not found"
+                                )
+                        );
+        System.out.println(
+                "Current User: "
+                        + currentUserId
+        );
+
+        System.out.println(
+                "Owner: "
+                        + document.getOwner()
+                        .getId()
+        );
+        if (
+                document.getOwner()
+                        .getId()
+                        != currentUserId
+        ) {
+            throw new RuntimeException(
+                    "Forbidden"
+            );
+        }
+        User targetUser =
+                userRepository
+                        .findByEmail(
+                                request.getEmail()
+                        )
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "User not found"
+                                )
+                        );
+        if(
+                targetUser.getId()
+                        == currentUserId
+        ){
+            throw new RuntimeException(
+                    "Can't send Urself"
+            );
+        }
+        if(document.getSharedUsers()
+                .contains(targetUser)
+        )
+        {
+
+            throw new RuntimeException(
+
+                    "Already Shared"
+
+            );
+
+        }
+        document.getSharedUsers()
+                .add(targetUser);
+
+        documentRepository
+                .save(document);
+        ShareDocumentResponse response =
+                new ShareDocumentResponse();
+
+        response.setMessage(
+                "Document shared successfully"
         );
 
         return response;
