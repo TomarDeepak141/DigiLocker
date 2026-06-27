@@ -7,6 +7,15 @@ public class DocumentResponse {
     private Long id;
     private String fileName;
     private DocumentType documentType;
+    private boolean shared;
+
+    public boolean isShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
 
     public Long getId() {
         return id;

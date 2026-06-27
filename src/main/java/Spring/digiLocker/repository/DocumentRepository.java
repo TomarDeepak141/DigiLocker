@@ -9,4 +9,8 @@ import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document,Long> {
     List<Document> findByOwner(User owner);
+    List<Document>
+            findBySharedUsersContains(
+            User user
+    );
 }

@@ -4,6 +4,7 @@ import Spring.digiLocker.dto.*;
 import Spring.digiLocker.entity.Document;
 import Spring.digiLocker.entity.User;
 import Spring.digiLocker.enums.DocumentType;
+import Spring.digiLocker.enums.Role;
 import Spring.digiLocker.repository.DocumentRepository;
 import Spring.digiLocker.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -15,7 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -167,9 +170,22 @@ public class DocumentService {
                                 )
                         );
 
-        List<Document> documents =
+        List<Document> ownedDocuments =
                 documentRepository
                         .findByOwner(owner);
+        List<Document> sharedDocuments =
+                documentRepository
+                        .findBySharedUsersContains(owner);
+        Set<Document> documents =
+                new HashSet<>();
+
+        documents.addAll(
+                ownedDocuments
+        );
+
+        documents.addAll(
+                sharedDocuments
+        );
         return documents.stream()
                 .map(document -> {
 
@@ -187,6 +203,9 @@ public class DocumentService {
                     response.setDocumentType(
                             document.getDocumentType()
                     );
+                    response.setShared(
+                            sharedDocuments.contains(document)
+                    );
 
                     return response;
                 })
@@ -202,9 +221,18 @@ public class DocumentService {
                         .getContext()
                         .getAuthentication();
 
+
         Long currentUserId =
                 (Long) authentication
                         .getPrincipal();
+        User currentUser =
+                userRepository
+                        .findById(currentUserId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "User not found"
+                                )
+                        );
 
         Document document =
                 documentRepository
@@ -221,6 +249,9 @@ public class DocumentService {
                 document.getOwner()
                         .getId()
                         != currentUserId
+                &&
+                        !document.getSharedUsers()
+                                .contains(currentUser)
         ) {
             throw new RuntimeException(
                     "Forbidden"
@@ -280,16 +311,51 @@ public class DocumentService {
                     "File not found"
             );
         }
+        return deleteDocumentInternal(document);
+    }
+    public DeleteResponse deleteDocumentByAdmin(
+            Long documentId
+    ) throws IOException {
+
+        Document document =
+                documentRepository
+                        .findById(documentId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Document not found"
+                                )
+                        );
+
+        return deleteDocumentInternal(
+                document
+        );
+    }
+    private DeleteResponse deleteDocumentInternal(
+            Document document
+    ) throws IOException {
+
+        File file =
+                new File(
+                        document.getFilePath()
+                );
+
+        if (!file.exists()) {
+            throw new RuntimeException(
+                    "File not found"
+            );
+        }
+
         Files.delete(
                 file.toPath()
         );
-        documentRepository
-                .delete(document);
+
+        documentRepository.delete(document);
+
         DeleteResponse response =
                 new DeleteResponse();
 
         response.setDocumentId(
-                documentId
+                document.getId()
         );
 
         response.setMessage(
@@ -298,6 +364,8 @@ public class DocumentService {
 
         return response;
     }
+
+
     public ShareDocumentResponse
     shareDocument(
             Long documentId,
