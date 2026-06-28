@@ -5,6 +5,10 @@ import Spring.digiLocker.entity.Document;
 import Spring.digiLocker.entity.User;
 import Spring.digiLocker.enums.DocumentType;
 import Spring.digiLocker.enums.Role;
+import Spring.digiLocker.exception.DocumentNotFoundException;
+import Spring.digiLocker.exception.ForbiddenException;
+import Spring.digiLocker.exception.InvalidOperationException;
+import Spring.digiLocker.exception.UserNotFoundException;
 import Spring.digiLocker.repository.DocumentRepository;
 import Spring.digiLocker.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -61,18 +65,18 @@ public class DocumentService {
                 userRepository
                         .findById(currentUserId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new UserNotFoundException(
                                         "User not found"
                                 )
                         );
         if(file.isEmpty()) {
-            throw new RuntimeException(
+            throw new InvalidOperationException(
                     "File cannot be empty"
             );
         }
 
         if(file.getSize() > MAX_FILE_SIZE) {
-            throw new RuntimeException(
+            throw new InvalidOperationException(
                     "File too large"
             );
         }
@@ -165,7 +169,7 @@ public class DocumentService {
                 userRepository
                         .findById(currentUserId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new UserNotFoundException(
                                         "User not found"
                                 )
                         );
@@ -229,7 +233,7 @@ public class DocumentService {
                 userRepository
                         .findById(currentUserId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new UserNotFoundException(
                                         "User not found"
                                 )
                         );
@@ -238,7 +242,7 @@ public class DocumentService {
                 documentRepository
                         .findById(documentId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new DocumentNotFoundException(
                                         "Document not found"
                                 )
                         );
@@ -253,7 +257,7 @@ public class DocumentService {
                         !document.getSharedUsers()
                                 .contains(currentUser)
         ) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "Forbidden"
             );
         }
@@ -264,7 +268,7 @@ public class DocumentService {
                 );
 
         if(!file.exists()) {
-            throw new RuntimeException(
+            throw new DocumentNotFoundException(
                     "File not found"
             );
         }
@@ -289,7 +293,7 @@ public class DocumentService {
                 documentRepository
                         .findById(documentId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new DocumentNotFoundException(
                                         "Document not found"
                                 )
                         );
@@ -298,7 +302,7 @@ public class DocumentService {
                         .getId()
                         != currentUserId
         ) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "Forbidden"
             );
         }
@@ -307,7 +311,7 @@ public class DocumentService {
                         document.getFilePath()
                 );
         if (!file.exists()) {
-            throw new RuntimeException(
+            throw new DocumentNotFoundException(
                     "File not found"
             );
         }
@@ -321,7 +325,7 @@ public class DocumentService {
                 documentRepository
                         .findById(documentId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new DocumentNotFoundException(
                                         "Document not found"
                                 )
                         );
@@ -340,7 +344,7 @@ public class DocumentService {
                 );
 
         if (!file.exists()) {
-            throw new RuntimeException(
+            throw new DocumentNotFoundException(
                     "File not found"
             );
         }
@@ -383,7 +387,7 @@ public class DocumentService {
                 documentRepository
                         .findById(documentId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new DocumentNotFoundException(
                                         "Document not found"
                                 )
                         );
@@ -402,7 +406,7 @@ public class DocumentService {
                         .getId()
                         != currentUserId
         ) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "Forbidden"
             );
         }
@@ -412,7 +416,7 @@ public class DocumentService {
                                 request.getEmail()
                         )
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new UserNotFoundException(
                                         "User not found"
                                 )
                         );
@@ -420,7 +424,7 @@ public class DocumentService {
                 targetUser.getId()
                         == currentUserId
         ){
-            throw new RuntimeException(
+            throw new InvalidOperationException(
                     "Can't send Urself"
             );
         }
@@ -429,7 +433,7 @@ public class DocumentService {
         )
         {
 
-            throw new RuntimeException(
+            throw new InvalidOperationException(
 
                     "Already Shared"
 

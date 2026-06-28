@@ -8,7 +8,10 @@ public class LoginRequest {
     @NotBlank(message = "email si required")
     private String email;
 
-    public @Email @NotBlank(message = "email si required") String getEmail() {
+    @Email
+    @NotBlank(message = "email si required")
+    public String getEmail() {
+
         return email;
     }
 

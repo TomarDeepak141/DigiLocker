@@ -4,6 +4,7 @@ import Spring.digiLocker.dto.LoginRequest;
 import Spring.digiLocker.dto.LoginResponse;
 import Spring.digiLocker.dto.RegisterRequest;
 import Spring.digiLocker.entity.User;
+import Spring.digiLocker.exception.InvalidOperationException;
 import Spring.digiLocker.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +26,7 @@ public class UserService {
     public User createUser(RegisterRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
             System.out.println("EMAIL ALREADY EXISTS");
-            throw new RuntimeException("Email already exists");
+            throw new InvalidOperationException("Email already exists");
         }
         User user = new User();
 
@@ -45,7 +46,7 @@ public class UserService {
                 );
 
         if(userOptional.isEmpty()) {
-            throw new RuntimeException(
+            throw new InvalidOperationException(
                     "Invalid Credentials"
             );
         }
@@ -55,7 +56,7 @@ public class UserService {
                 request.getPassword(),
                 user.getPassword()
         )) {
-            throw new RuntimeException(
+            throw new InvalidOperationException(
                 "Invalid Credentials"
         );
         }
