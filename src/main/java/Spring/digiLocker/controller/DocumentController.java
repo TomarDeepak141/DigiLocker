@@ -3,6 +3,7 @@ package Spring.digiLocker.controller;
 import Spring.digiLocker.dto.*;
 import Spring.digiLocker.enums.DocumentType;
 import Spring.digiLocker.services.DocumentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,9 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(
+        name = "Bearer Authentication"
+)
 public class DocumentController {
 
     private final DocumentService documentService;

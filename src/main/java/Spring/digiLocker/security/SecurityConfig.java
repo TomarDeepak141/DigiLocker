@@ -28,8 +28,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/register",
-                                "/login"
-                        ).permitAll()
+                                "/login",
+
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        )
+                        .permitAll()
 
                         .requestMatchers(
                                 "/admin/**"

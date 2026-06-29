@@ -6,11 +6,15 @@ import Spring.digiLocker.dto.RegisterRequest;
 import Spring.digiLocker.entity.User;
 import Spring.digiLocker.services.JWTService;
 import Spring.digiLocker.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@SecurityRequirement(
+        name = "Bearer Authentication"
+)
 public class UserController {
 
     private final UserService userService;
