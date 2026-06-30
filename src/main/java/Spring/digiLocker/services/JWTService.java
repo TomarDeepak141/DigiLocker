@@ -42,6 +42,7 @@ public class JWTService {
                 secret.getBytes(StandardCharsets.UTF_8)
         );
     }
+    //used to extract all the claims
     private Claims extractAllClaims(
             String token
     ){
