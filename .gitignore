@@ -34,3 +34,9 @@ build/
 .idea/
 target/
 *.iml
+
+uploads/
+
+*.log
+
+application.properties
