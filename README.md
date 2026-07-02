@@ -1,26 +1,46 @@
+![Java](https://img.shields.io/badge/Java-21-orange)
+
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-green)
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
+
+![JWT](https://img.shields.io/badge/JWT-Authentication-red)
+
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 # DigiLocker Backend
 
-A secure document management backend built using **Java**, **Spring Boot**, **Spring Security**, **JWT Authentication**, and **PostgreSQL**.
+A secure document management **REST API** built using Java 21, Spring Boot, Spring Security, JWT Authentication, and PostgreSQL.
 
 ## Overview
 
-DigiLocker Backend is a RESTful API that allows users to securely manage digital documents. It provides authentication, authorization, document upload, download, sharing, and management features while following a layered architecture.
+A secure document management REST API built using **Java 21**, **Spring Boot**, **Spring Security**, **JWT Authentication**, and **PostgreSQL**. The application enables users to securely upload, download, share, and manage digital documents while enforcing role-based access control and JWT-based authentication.
 
 ---
 
-## Features
+## ✨ Features
 
+### 🔐 Authentication & Security
 - User Registration
-- Secure Login using JWT Authentication
+- JWT Authentication
+- BCrypt Password Encryption
 - Role-Based Authorization
+
+### 📄 Document Management
 - Upload Documents
 - Download Documents
-- View Documents
 - Delete Documents
-- Share Documents with Other Users
-- Input Validation
-- Exception Handling
-- RESTful API Design
+- View Documents
+
+### 🤝 Sharing
+- Share Documents
+- View Shared Documents
+
+### 🛠 Backend Features
+- DTO Pattern
+- Request Validation
+- Global Exception Handling
+- Swagger API Documentation
 
 ---
 
@@ -57,21 +77,57 @@ src
 ---
 
 ## Architecture
-
+```text
+                Client
+         (Swagger/Postman)
+                  │
+                  ▼
+        Spring Security Filter
+          JWT Authentication
+                  │
+                  ▼
+            Controller Layer
+                  │
+                  ▼
+             Service Layer
+        (Business Logic)
+                  │
+                  ▼
+          Repository Layer
+         (Spring Data JPA)
+                  │
+                  ▼
+             PostgreSQL
 ```
-Client
-   │
-   ▼
-Controller
-   │
-   ▼
-Service
-   │
-   ▼
-Repository
-   │
-   ▼
-PostgreSQL
+
+---
+
+##DataBase Design
+```text
+User
+-----
+id
+name
+email
+password
+role
+
+      1
+      │
+      │
+      *
+Document
+--------
+id
+fileName
+documentType
+owner
+
+      *
+      │
+      │
+      *
+Shared Users
 ```
 
 ---
@@ -103,6 +159,30 @@ Flow:
 - GET /documents/{id}
 - DELETE /documents/{id}
 - POST /documents/share
+  
+### Admin
+
+- GET /admin/users
+- GET /admin/documents
+- DELETE /admin/users/{id}
+- DELETE /admin/documents/{id}
+
+---
+
+## Key Concepts Demonstrated
+
+- Layered Architecture
+- REST API Design
+- Spring Security
+- JWT Authentication
+- Role-Based Authorization
+- DTO Pattern
+- Spring Data JPA
+- Hibernate
+- Exception Handling
+- Request Validation
+- File Handling
+- Dependency Injection
 
 ---
 
@@ -122,11 +202,17 @@ cd DigiLocker
 
 ### Configure PostgreSQL
 
-Update:
+Copy application.properties.example
+to
 
-```
-src/main/resources/application.properties
-```
+application.properties
+
+and configure:
+
+DB URL
+Username
+Password
+JWT Secret
 
 with your database credentials.
 
@@ -146,13 +232,14 @@ mvn spring-boot:run
 
 ## Future Improvements
 
-- Swagger/OpenAPI Documentation
-- Docker Support
-- File Storage using AWS S3
-- Email Notifications
-- API Rate Limiting
-- Microservices Architecture
-- Redis Caching
+- AWS S3 Integration
+- Docker
+- Redis
+- Unit Testing
+- CI/CD
+- Email Verification
+- Audit Logs
+- Rate Limiting
 
 ---
 
